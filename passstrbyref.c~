@@ -1,0 +1,27 @@
+#include "string.h"
+#include "stdio.h"
+#include "stdlib.h"
+typedef struct hash {
+  char *key;
+  char *value;
+} hash;
+
+char *give_message( char *message, int num );
+//###########################################
+int main() {
+  char *mysentence;
+  mysentence = 0;
+  
+  return 0;
+}
+
+char *give_hello( void  ) {
+   //write in string something, need a realloc?
+   return("hello");
+}
+
+char *give_message ( char *message, int num ) {
+
+}
+
+

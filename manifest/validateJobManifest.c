@@ -1,0 +1,136 @@
+/*
+ * validateJobManifest.c : checks the manifes in a Job from the IPP
+ *
+ */
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+/*
+ * COMPAT using xml-config --cflags to get the include path this will
+ * use libxml2-2.1.0 + 
+ */
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h> 
+
+#include "validateJobManifest.h"
+
+batch * parseBatches (batch *batchPtr, char *xmlfile) {
+  xmlChar *key;
+  xmlChar *name;
+  xmlChar *bytes;
+  xmlChar *checksum;
+  xmlDocPtr doc;
+  xmlNodePtr cur;
+  cur = cur->xmlChildrenNode;
+  
+  /*
+   * this initialize the library and check potential ABI mismatches
+   * between the version it was compiled for and the actual shared
+   * library used.
+   */
+  
+  LIBXML_TEST_VERSION
+
+  /*parse the file and get the DOM */
+  doc = xmlReadFile(xmlfile, NULL, 0);
+
+  if (doc == NULL) {
+    printf("error: could not parse file %s\n", xmlfile);
+  }
+
+  /*Get the root element node */
+  cur = xmlDocGetRootElement(doc);
+
+  if (cur == NULL) {
+    printf("empty document\n");
+  }
+
+  if (xmlStrcmp(cur->name, (const xmlChar *) ROOTNODE)) {
+    printf("Error, wrong root node in manifest file %s. Should be %s\n",xmlfile, ROOTNODE);
+  }
+  //print_element_names(cur);
+
+  //we found root so get the children which are batch files
+  cur = cur->xmlChildrenNode;
+
+  while ( cur != NULL ) {
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) BATCHFILENODE))) {
+      key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+      //assign FITS file properties
+      name = xmlGetProp(cur, (const xmlChar *) BATCHNAMEPROP);
+      bytes = xmlGetProp(cur, (const xmlChar *) BATCHSIZEPROP);
+      checksum = xmlGetProp(cur, (const xmlChar *) BATCHCHECKSUMPROP);
+      //add a new batch file
+      batchPtr= AddBatch(batchPtr, name, bytes, checksum);
+      xmlFree(key);
+    } //if
+    cur = cur->next;
+  } //while
+
+  /*free the document */
+  xmlFreeDoc(doc);
+
+  /*
+   *Free the global variables that may
+   *have been allocated by the parser.
+   */
+  xmlCleanupParser();
+
+  return (batchPtr);
+
+} //rseBatches
+
+batch * AddBatch (batch * batchPtr, xmlChar *name, xmlChar *bytes, xmlChar *checksum) {
+
+    batch *newBatch = batchPtr;
+
+    if (batchPtr != NULL) {
+	while (batchPtr -> next_batch != NULL) {
+	    batchPtr = batchPtr -> next_batch;
+        }
+	batchPtr -> next_batch = (struct batch  *) malloc (sizeof (batch));
+	batchPtr = batchPtr -> next_batch;
+	batchPtr -> next_batch = NULL;
+        //assign details in XML file
+	batchPtr -> name = name;
+        batchPtr -> bytes = bytes;
+        batchPtr -> checksum = checksum;
+	return newBatch;
+    }
+    else {
+	batchPtr = (struct batch  *) malloc (sizeof (batch));
+	batchPtr -> next_batch = NULL;
+	//assign details in XML file
+	batchPtr -> name = name;
+        batchPtr -> bytes = bytes;
+        batchPtr -> checksum = checksum;
+	return batchPtr;
+    }
+}
+
+void printBatches (batch *batchPtr) {
+
+    if (batchPtr == NULL)
+	printf ("no batches!\n");
+    else
+	while (batchPtr != NULL) {
+	    printf ("%s\t", batchPtr -> name);
+            printf ("%s\t", batchPtr -> bytes);
+            printf ("%s\n", batchPtr -> checksum);
+	    batchPtr = batchPtr -> next_batch;
+	}
+    printf ("\n");
+}
+static void
+print_element_names(xmlNode * a_node)
+{
+    xmlNode *cur_node = NULL;
+
+    for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+        if (cur_node->type == XML_ELEMENT_NODE) {
+            printf("node type: Element, name: %s\n", cur_node->name);
+        }
+        print_element_names(cur_node->children);
+    }
+}
+

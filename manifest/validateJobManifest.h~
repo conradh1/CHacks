@@ -1,0 +1,40 @@
+/*
+ *          File: validateJobManifest.h
+ * Last Modified: April 29, 2008
+ *         PSPS Job manifest validation
+ * ----------------------------------------------------------------
+ */
+
+#define DEBUG(x) printf(x)
+/*
+ * The Macros before followed the XML
+ * structure of a manifest.xml for a Job
+*/
+#define ROOTNODE "manifest" 
+#define BATCHFILENODE "file"
+#define BATCHNAMEPROP "name"
+#define BATCHSIZEPROP "bytes"
+#define BATCHCHECKSUMPROP "md5"
+
+/*
+ * a Description for a Batch in which 
+ * many are in a single Job
+ */
+typedef struct batch {
+    xmlChar *name;
+    xmlChar *bytes;
+    xmlChar *checksum;
+    struct batch *next_batch;
+} batch;
+
+//function adds a batch  type and returns a pointer to a batch
+batch * AddBatch (batch *BatchPtr, xmlChar *name, xmlChar *bytes, xmlChar *checksum);
+
+//This function returns a group of batches read from a manifest file
+batch * parseBatches (batch *batchPtr, xmlDocPtr doc, xmlNodePtr cur);
+
+//Used for debugging this procedure
+void printBatches (batch *batchPtr);
+
+
+

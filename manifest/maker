@@ -1,0 +1,1 @@
+gcc -o main -I/usr/include/libxml2 main.c validateJobManifest.c -lxml2 -lz -lm

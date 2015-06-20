@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE manifest SYSTEM "psps-manifest.dtd">
+<manifest type="job" name="JobManifest_1" timestamp="2006-07-
+06@10:26:00GMT">
+  <file name="IPP1_B1.tar.gz" bytes="123" md5="abc"/>
+  <file name="IPP1_B2.tar.gz" bytes="234" md5="efg"/>
+  <file name="IPP1_B3.tar.gz" bytes="345" md5="hij"/>
+  <file name="IPP1_B4.tar.gz" bytes="456" md5="poi"/>
+  <file name="IPP1_B5.tar.gz" bytes="567" md5="uio"/>
+  <file name="IPP1_B6.tar.gz" bytes="678" md5="qwe"/>
+  <file name="IPP1_B7.tar.gz" bytes="789" md5="wer"/>
+  <file name="IPP1_B8.tar.gz" bytes="101" md5="xyz"/>
+</manifest>
